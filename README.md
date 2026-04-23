@@ -1,6 +1,5 @@
-===========================================================
+
 USOM IOC Downloader
-===========================================================
 
 Author      : Ahmet Genç
 Role        : Cyber Security Researcher / Analyst
@@ -23,4 +22,4 @@ Bu script, USOM API'si üzerinden son 6 aya ait IOC verilerini çeker. Zaman bil
 Outputs:
 - domainlist.txt
 - iplist.txt
-===========================================================
+

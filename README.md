@@ -20,7 +20,7 @@ Bu script, USOM API'si üzerinden son 6 aya ait IOC verilerini çeker. Zaman bil
 
 ✔ Timeout / exception handling
 
-Outputs:
+Çıktı:
 
 - domainlist.txt
 - iplist.txt

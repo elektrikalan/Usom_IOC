@@ -5,24 +5,48 @@ USOM IOC Downloader (Domain + IP)
 
 Author      : Ahmet Genç
 Created     : 23.04.2026
-Version     : 1.0
+Version     : 1.1
 
 Description :
-Bu script, USOM API'si üzerinden son 6 aya ait IOC verilerini çeker.
+Bu script, USOM API'si üzerinden kullanıcı tarafından belirlenen
+tarih aralığındaki IOC (Indicator of Compromise) verilerini çeker.
 
 Çekilen veriler:
 - Zararlı Domain adresleri
 - Zararlı IP adresleri
 
+Tarih Aralığı:
+Kullanıcıdan alınan;
+- Gün
+- Ay
+- Yıl
+
+bilgilerine göre geriye dönük sorgulama yapar.
+Varsayılan olarak:
+- 6 Ay
+- 0 Yıl
+- 0 Gün
+
+olarak çalışır.
+
 Özellikler:
 ✔ Otomatik sayfalama
 ✔ Duplicate temizleme
-✔ TXT çıktı
+✔ Domain normalize etme (lowercase)
+✔ IP adreslerini sıralı kaydetme
+✔ TXT çıktı üretme
 ✔ Timeout / exception handling
+✔ Kullanıcı tanımlı tarih aralığı desteği
 
 Outputs:
 - domainlist.txt
 - iplist.txt
+
+Requirements:
+pip install requests python-dateutil
+
+Usage:
+python usom_ioc_downloader.py
 
 ===========================================================
 """
@@ -36,7 +60,23 @@ from dateutil.relativedelta import relativedelta
     ####SABITLER####
 # Tarih aralığı
 bugun = date.today()
-alti_ay_once = bugun - relativedelta(months=6)
+
+zaman_gun = input("Kaç gün geriye gitmek istersiniz? (Varsayılan: 0): ")
+zaman_ay = input("Kaç ay geriye gitmek istersiniz? (Varsayılan: 6): ")
+zaman_yil = input("Kaç yıl geriye gitmek istersiniz? (Varsayılan: 0): ")
+
+zaman_ay = int(zaman_ay) if zaman_ay else 6
+zaman_yil = int(zaman_yil) if zaman_yil else 0
+zaman_gun = int(zaman_gun) if zaman_gun else 0
+
+zaman_geri = bugun - relativedelta(
+    years=zaman_yil,
+    months=zaman_ay,
+    days=zaman_gun
+)
+
+print(f"Bugün      : {bugun}")
+print(f"Geri tarih : {zaman_geri}")
 
 toplam_kayit = 0
 
@@ -53,7 +93,7 @@ def ioc(ioc_type):
         url = (
             f"https://www.usom.gov.tr/api/address/index"
             f"?type={ioc_type}"
-            f"&date_gte={alti_ay_once}"
+            f"&date_gte={zaman_geri}"
             f"&date_lte={bugun}"
             f"&page={page}"
         )

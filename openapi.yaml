@@ -1,0 +1,554 @@
+openapi: "3.0.0"
+info: 
+  version: "1.1"
+  title: "USOM API"
+  description: |
+    USOM, 5809 sayýlý kanun ile kendisine verilen görevler kapsamýnda yürüttüðü çalýþmalarla tespit ettiði tehdit istihbarat verilerini (zararlý ip, domain, url adresleri vb.) [www.usom.gov.tr](https://www.usom.gov.tr/adres) web adresinde paylaþmaktadýr. Söz konusu paylaþýlan bilgilere otomatik olarak eriþilerek güvenlik duvarý, SIEM, url filtreleme ve DNS gibi uygulama/sistemlerin entegre edilebilmesi amacýyla USOM tarafýndan API geliþtirilmiþ olup API’nin kullanýmý ile ilgili ayrýntýlý bilgiler aþaðýda sunulmuþtur.
+
+    Geliþtirilen API üzerinden “IPv4, IPv6, IPv6net, URL ve Domain” formatlarýnda zararlý adresler sürekli güncellenerek paylaþýlmaktadýr. Ayrýca API ile belirli tarih aralýðý belirterek, zararlý tipine, kritiklik seviyesine göre sorgular yapýlabilmektedir.
+  termsOfService: "https://www.usom.gov.tr/gizlilik"
+  contact:
+    name: "USOM"
+    url: "https://www.usom.gov.tr"
+    email: "iletisim@usom.gov.tr"
+servers: 
+  - 
+    url: "{scheme}://www.usom.gov.tr"
+    variables: 
+      scheme: 
+        enum: 
+          - "https"
+        default: "https"
+tags: 
+  - 
+    name: "api"
+
+components:
+  schemas:
+    ErrorModel: 
+      type: "object"
+      properties: 
+        code: 
+          type: "string"
+  
+    AddressDescription:
+      type: "object"
+      properties: 
+        id: 
+          type: "string"
+        tr_title: 
+          type: "string"
+        en_title: 
+          type: "string"
+        tr_desc: 
+          type: "string"
+        en_desc: 
+          type: "string"
+      required: 
+        - "id"
+        - "tr_title"
+        - "en_title"
+        - "tr_desc"
+        - "en_desc"
+    AddressDescriptionResponse:
+      type: "object"
+      properties:
+        totalCount: 
+          type: "number"
+        count: 
+          type: "number"
+        models: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/AddressDescription"
+        page: 
+          type: "number"
+        pageCount: 
+          type: "number"
+  
+    AddressConnectionTypeResponse:
+      type: "object"
+      properties: 
+        totalCount: 
+          type: "number"
+        count: 
+          type: "number"
+        models: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/AddressConnectionType"
+        page: 
+          type: "number"
+        pageCount: 
+          type: "number"
+    AddressConnectionType:
+      type: "object"
+      properties: 
+        id: 
+          type: "string"
+        tr_title: 
+          type: "string"
+        en_title: 
+          type: "string"
+      required: 
+        - "id"
+        - "tr_title"
+        - "en_title"
+  
+    AddressSourceResponse:
+      type: "object"
+      properties: 
+        totalCount: 
+          type: "number"
+        count: 
+          type: "number"
+        models: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/AddressSource"
+        page: 
+          type: "number"
+        pageCount: 
+          type: "number"
+    AddressSource:
+      type: "object"
+      properties: 
+        id: 
+          type: "string"
+        tr_title: 
+          type: "string"
+        en_title: 
+          type: "string"
+      required: 
+        - "id"
+        - "tr_title"
+        - "en_title"
+  
+    AddressResponse:
+      type: "object"
+      properties: 
+        totalCount: 
+          type: "number"
+        count: 
+          type: "number"
+        models: 
+          type: "array"
+          items: 
+            $ref: "#/components/schemas/Address"
+        page: 
+          type: "number"
+        pageCount: 
+          type: "number"
+    Address:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        url:
+          type: "string"
+        type: 
+          type: "string"
+        desc: 
+          type: "string"
+        source: 
+          type: "string"
+        date: 
+          type: "string"
+        criticality_level: 
+          type: "number"
+        connectiontype: 
+          type: "string"
+
+paths: 
+  /api/address/index: 
+    get: 
+      security: []
+      tags: 
+        - "api"
+      summary: "api"
+      parameters: 
+        - 
+          in: "query"
+          name: "q"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "type"
+          schema: 
+            type: "string"
+            enum: [domain, url, ip, ip6, ip6net]
+        - 
+          in: "query"
+          name: "source"
+          description: "AddressSource.id"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "desc"
+          description: "AddressDescription.id"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "connectiontype"
+          description: "AddressConnectionType.id"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "criticality_level"
+          description: "Criticality Level (1 En Yüksek - 10 En Düþük)"
+          schema: 
+            type: "integer"
+            minimum: 1
+            maximum: 10
+        - 
+          in: "query"
+          name: "date_gte"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "date_lte"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "page"
+          schema: 
+            type: "string"
+      responses: 
+        200: 
+          description: ""
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/AddressResponse"
+              example: 
+                totalCount: 0
+                count: 0
+                models: []
+                page: 0
+                pageCount: 0
+  /api/address-description/index: 
+    get: 
+      security: []
+      tags: 
+        - "api"
+      summary: "api"
+      responses: 
+        200: 
+          description: ""
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/AddressDescriptionResponse"
+              example: 
+                totalCount: 7
+                count: 7
+                models: 
+                  - 
+                    id: "BP"
+                    tr_title: "Bankacýlýk - Oltalama"
+                    en_title: "Financial Phishing"
+                    tr_desc: "Finsans sektörüne özel olarak gerçekleþtirilen sosyal mühendislik saldýrýlarýna yönelik zararlý alan adý, IP adresi veya baðlantýlarýn bulunduðu kategoridir."
+                    en_desc: ""
+                  - 
+                    id: "PH"
+                    tr_title: "Oltalama"
+                    en_title: "Phishing"
+                    tr_desc: "Finans sektörünün dýþýndaki sosyal mühendislik saldýrýlarýna yönelik zararlý alan adý, IP adresi veya baðlantýlarýn bulunduðu kategoridir."
+                    en_desc: ""
+                  - 
+                    id: "MD"
+                    tr_title: "Zararlý Yazýlým Barýndýran / Yayan Alan Adý"
+                    en_title: "Malware Distribution Domain"
+                    tr_desc: "Zararlý yazýlýmlarýn çalýþmasý için bir bölümünün veya tamamýnýn indirildiði alan adlarýna ait kategoridir."
+                    en_desc: ""
+                page: 0
+                pageCount: 1
+  /api/address-connection-type/index: 
+    get: 
+      security: []
+      tags: 
+        - "api"
+      summary: "api"
+      responses: 
+        200: 
+          description: ""
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/AddressConnectionTypeResponse"
+              example: 
+                totalCount: 2
+                count: 2
+                models: 
+                  - 
+                    id: "AC"
+                    tr_title: "Apt C&C"
+                    en_title: "Apt C&C"
+                  - 
+                    id: "EK"
+                    tr_title: "Exploit Kit"
+                    en_title: "Exploit Kit"
+                page: 0
+                pageCount: 1
+  /api/address-source/index: 
+    get: 
+      security: []
+      tags: 
+        - "api"
+      summary: "api"
+      responses: 
+        200: 
+          description: ""
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/AddressSourceResponse"
+              example: 
+                totalCount: 4
+                count: 4
+                models: 
+                  - 
+                    id: "US"
+                    tr_title: "USOM"
+                    en_title: "TR-CERT"
+                  - 
+                    id: "SO"
+                    tr_title: "SOME"
+                    en_title: "CERT"
+                  - 
+                    id: "RS"
+                    tr_title: "RSA"
+                    en_title: "RSA"
+                page: 0
+                pageCount: 1
+  /api/incident/index: 
+    get: 
+      security: []
+      tags: 
+        - "api"
+      summary: "api"
+      parameters: 
+        - 
+          in: "query"
+          name: "language"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "url"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "date_gte"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "date_lte"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "q"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "page"
+          schema: 
+            type: "string"
+      responses: 
+        200: 
+          description: ""
+          content: 
+            application/json: 
+              schema: 
+                type: "object"
+                properties: 
+                  totalCount: 
+                    type: "number"
+                  count: 
+                    type: "number"
+                  models: 
+                    type: "array"
+                    items: {}
+                  page: 
+                    type: "number"
+                  pageCount: 
+                    type: "number"
+              example: 
+                totalCount: 0
+                count: 0
+                models: []
+                page: 0
+                pageCount: 0
+  /api/announcement/index: 
+    get: 
+      security: []
+      tags: 
+        - "api"
+      summary: "api"
+      parameters: 
+        - 
+          in: "query"
+          name: "language"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "date_gte"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "date_lte"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "q"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "page"
+          schema: 
+            type: "string"
+      responses: 
+        200: 
+          description: ""
+          content: 
+            application/json: 
+              schema: 
+                type: "object"
+                properties: 
+                  totalCount: 
+                    type: "number"
+                  count: 
+                    type: "number"
+                  models: 
+                    type: "array"
+                    items: {}
+                  page: 
+                    type: "number"
+                  pageCount: 
+                    type: "number"
+              example: 
+                totalCount: 0
+                count: 0
+                models: []
+                page: 0
+                pageCount: 0
+  /api/doc/index: 
+    get: 
+      security: []
+      tags: 
+        - "api"
+      summary: "api"
+      parameters: 
+        - 
+          in: "query"
+          name: "language"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "extension"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "icon"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "url"
+          schema: 
+            type: "string"
+        - 
+          in: "query"
+          name: "per-page"
+          schema: 
+            type: "string"
+      responses: 
+        200: 
+          description: ""
+          content: 
+            application/json: 
+              schema: 
+                type: "object"
+                properties: 
+                  totalCount: 
+                    type: "number"
+                  count: 
+                    type: "number"
+                  models: 
+                    type: "array"
+                    items: 
+                      type: "object"
+                      properties: 
+                        id: 
+                          type: "number"
+                        title: 
+                          type: "string"
+                        desc: 
+                          type: "string"
+                        link: 
+                          type: "string"
+                        date: 
+                          type: "string"
+                        language: 
+                          type: "string"
+                        slug: 
+                          type: "string"
+                      required: 
+                        - "id"
+                        - "title"
+                        - "desc"
+                        - "link"
+                        - "date"
+                        - "language"
+                        - "slug"
+                  page: 
+                    type: "number"
+                  pageCount: 
+                    type: "number"
+              example: 
+                totalCount: 12
+                count: 5
+                models: 
+                  - 
+                    id: 17
+                    title: "Sektörel SOME Rehberi"
+                    desc: "<p>Sektörel SOME rehber dökümanýný aþaðýdaki baðlantýdan indirebilirsiniz.</p>"
+                    link: "https://dsy.usom.gov.tr/usom/19/02/190211090404_Sektorel SOME Rehberi.pdf"
+                    date: "2016-08-04 21:31:25"
+                    language: "tr"
+                    slug: "sektorel-some-rehberi"
+                  - 
+                    id: 16
+                    title: "Kurumsal SOME Rehberi"
+                    desc: "<p>Kurumsal SOME rehber dökümanýný aþaðýdaki baðlantýdan indirebilirsiniz.</p>"
+                    link: "https://dsy.usom.gov.tr/usom/19/02/190211090329_Kurumsal _SOME_Rehberi.pdf"
+                    date: "2016-08-04 21:30:12"
+                    language: "tr"
+                    slug: "kurumsal-some-rehberi"
+                  - 
+                    id: 15
+                    title: "Kurumsal SOME Etkinliði Sunumlarý"
+                    desc: "<p>30.01.2015 tarihinde düzenlenen Kurumsal SOME Etkinliði'nde  gerçekleþtirilen sunumlara ait dosyalar eklenmiþtir.</p>"
+                    link: "https://dsy.usom.gov.tr/usom/19/02/190211090114_Kurumsal_SOME_Etkinligi_Sunumlar.zip"
+                    date: "2015-02-02 22:05:46"
+                    language: "tr"
+                    slug: "kurumsal-some-etkinligi-sunumlari"
+                page: 0
+                pageCount: 3
+

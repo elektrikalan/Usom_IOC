@@ -6,6 +6,8 @@ Açıklama :
 Bu script, USOM API'si üzerinden kullanıcı tarafından belirlenen
 tarih aralığındaki IOC (Indicator of Compromise) verilerini çeker.
 
+01.06.2026 itibari ile usom.gov.tr adresi sibereguvenlik.gov.tr olarak degiseceginden url değismelidir.
+
 Çekilen veriler:
 
 - Zararlı Domain adresleri

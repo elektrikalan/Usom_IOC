@@ -9,7 +9,7 @@ Updated     : 28.04.2026
 Version     : 2.1
 
 Description :
-Bu script, HALKBANK Siemde kullanılmak üzere USOM API'si üzerinden kullanıcı tarafından belirlenen tarih aralığındaki IOC (Indicator of Compromise) verilerini çeker. 
+Bu script, USOM API'si üzerinden kullanıcı tarafından belirlenen tarih aralığındaki IOC (Indicator of Compromise) verilerini çeker. 
 Oluşturulan dosyalar domainlist.txt ve iplist.txt olarak kaydedilir.
 Dosyaya ekleme yapmaz, var olan dosyayı günceller.
 
